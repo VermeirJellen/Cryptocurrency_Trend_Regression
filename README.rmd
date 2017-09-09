@@ -3,7 +3,7 @@ title: "Bitcoin / Cryptocurrency Market - Trend Regression"
 output: rmarkdown::github_document
 ---
 
-Simple trend regressions on bitcoin price data + total cryptocurrency market capitalization.
+Simple trend regressions on bitcoin price data + total cryptocurrency and altcoin market capitalizations.
 
 # Bitcoin Price Data
 
@@ -42,15 +42,61 @@ SimpleLogTrendRegression(data            = btc.price,
                          nr.future=120, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
 ```
  
-# Cryptocurrency Market Capitalization
+# Cryptocurrency Market Capitalization (Total)
 
-To be addded..
+Note: The analysis below uses weekly historical data that was scraped from [coinmarketcap.com](https://coinmarketcap.com/) and only goes back to 2013-04-28. Suggestions for better data sources are appreciated..
 
 ### Exponential Regression
+```{r message=FALSE}
+cryptocurrency.market.cap <- FetchCryptocurrencyMarketCapitalizations()
+SimpleLogTrendRegression(data = cryptocurrency.market.cap$total,
+                         data.identifier = "Total Cap", data.frequency = "weekly",
+                         regression.type = "exponential",
+                         nr.future       = 12, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
+```
 
 ### Loess Regression
+```{r message=FALSE}
+SimpleLogTrendRegression(data = cryptocurrency.market.cap$total,
+                         data.identifier = "Total Cap", data.frequency = "weekly",
+                         regression.type = "loess",
+                         nr.future       = 12, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
+```
 
 ### Logarithmic Regression (on log data)
+```{r message=FALSE}
+SimpleLogTrendRegression(data = cryptocurrency.market.cap$total,
+                         data.identifier = "Total Cap", data.frequency = "weekly",
+                         regression.type = "logarithmic",
+                         nr.future       = 12, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
+```
+
+
+# Cryptocurrency Market Capitalization (Altcoins)
+
+### Exponential Regression
+```{r message=FALSE}
+SimpleLogTrendRegression(data = cryptocurrency.market.cap$alts,
+                         data.identifier = "Alt Cap", data.frequency = "weekly",
+                         regression.type = "exponential",
+                         nr.future       = 12, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
+```
+
+### Loess Regression
+```{r message=FALSE}
+SimpleLogTrendRegression(data = cryptocurrency.market.cap$alts,
+                         data.identifier = "Alt Cap", data.frequency = "weekly",
+                         regression.type = "loess",
+                         nr.future       = 12, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
+```
+
+### Logarithmic Regression (on log data)
+```{r message=FALSE}
+SimpleLogTrendRegression(data = cryptocurrency.market.cap$alts,
+                         data.identifier = "Alt cap", data.frequency = "weekly",
+                         regression.type = "logarithmic",
+                         nr.future       = 12, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
+```
 
 ## Donations
 

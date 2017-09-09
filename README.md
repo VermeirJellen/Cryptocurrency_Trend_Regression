@@ -1,7 +1,7 @@
 Bitcoin / Cryptocurrency Market - Trend Regression
 ================
 
-Simple trend regressions on bitcoin price data + total cryptocurrency market capitalization.
+Simple trend regressions on bitcoin price data + total cryptocurrency and altcoin market capitalizations.
 
 Bitcoin Price Data
 ==================
@@ -47,16 +47,80 @@ SimpleLogTrendRegression(data            = btc.price,
 
 ![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-3-1.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-3-2.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-3-3.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-3-4.png)
 
-Cryptocurrency Market Capitalization
-====================================
+Cryptocurrency Market Capitalization (Total)
+============================================
 
-To be addded..
+Note: The analysis below uses weekly historical data that was scraped from [coinmarketcap.com](https://coinmarketcap.com/) and only goes back to 2013-04-28. Suggestions for better data sources are appreciated..
 
 ### Exponential Regression
 
+``` r
+cryptocurrency.market.cap <- FetchCryptocurrencyMarketCapitalizations()
+SimpleLogTrendRegression(data = cryptocurrency.market.cap$total,
+                         data.identifier = "Total Cap", data.frequency = "weekly",
+                         regression.type = "exponential",
+                         nr.future       = 12, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
+```
+
+![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-1.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-2.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-3.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-4.png)
+
 ### Loess Regression
 
+``` r
+SimpleLogTrendRegression(data = cryptocurrency.market.cap$total,
+                         data.identifier = "Total Cap", data.frequency = "weekly",
+                         regression.type = "loess",
+                         nr.future       = 12, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
+```
+
+![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-1.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-2.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-3.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-4.png)
+
 ### Logarithmic Regression (on log data)
+
+``` r
+SimpleLogTrendRegression(data = cryptocurrency.market.cap$total,
+                         data.identifier = "Total Cap", data.frequency = "weekly",
+                         regression.type = "logarithmic",
+                         nr.future       = 12, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
+```
+
+![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-6-1.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-6-2.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-6-3.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-6-4.png)
+
+Cryptocurrency Market Capitalization (Altcoins)
+===============================================
+
+### Exponential Regression
+
+``` r
+SimpleLogTrendRegression(data = cryptocurrency.market.cap$alts,
+                         data.identifier = "Alt Cap", data.frequency = "weekly",
+                         regression.type = "exponential",
+                         nr.future       = 12, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
+```
+
+![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-7-1.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-7-2.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-7-3.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-7-4.png)
+
+### Loess Regression
+
+``` r
+SimpleLogTrendRegression(data = cryptocurrency.market.cap$alts,
+                         data.identifier = "Alt Cap", data.frequency = "weekly",
+                         regression.type = "loess",
+                         nr.future       = 12, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
+```
+
+![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-1.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-2.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-3.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-4.png)
+
+### Logarithmic Regression (on log data)
+
+``` r
+SimpleLogTrendRegression(data = cryptocurrency.market.cap$alts,
+                         data.identifier = "Alt cap", data.frequency = "weekly",
+                         regression.type = "logarithmic",
+                         nr.future       = 12, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
+```
+
+![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-1.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-2.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-3.png)![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-4.png)
 
 Donations
 ---------

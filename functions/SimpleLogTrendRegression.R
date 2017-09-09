@@ -1,6 +1,7 @@
 SimpleLogTrendRegression <- function(data, 
                                      data.identifier = "BTC-price", 
                                      regression.type = "loess",
+                                     data.frequency  = "daily",
                                      nr.future       = 120, 
                                      loess.degree    = 1, 
                                      plot.2sd.log    = TRUE, 
@@ -8,6 +9,7 @@ SimpleLogTrendRegression <- function(data,
   
   to.fit        <- data.frame(log(data), seq_along(data))
   names(to.fit) <- c("ln.data", "time")
+  freq.str      <- ifelse(data.frequency == "daily", "nr.days", "nr.weeks")
   
   if(regression.type == "loess"){
     model.fit <- loess(ln.data ~ time, to.fit, 
@@ -27,9 +29,9 @@ SimpleLogTrendRegression <- function(data,
     m <- model.fit$coefficients[2]; r <- exp(m)
     
     plot.txt.log <- paste("log(", data.identifier, ") ~ ", round(b, 4), 
-                          " + ", round(m, 4), " * nr.days", sep="")
+                          " + ", round(m, 4), " *", freq.str, sep="")
     plot.txt.lvl <- paste(data.identifier, " ~ ",   round(A, 4), 
-                          " * (", round(r, 4), "^nr.days)", sep="")
+                          " * (", round(r, 4), "^", freq.str, ")", sep="")
   }
   else{ # regression.type = "logarithmic"
     
@@ -41,9 +43,9 @@ SimpleLogTrendRegression <- function(data,
     r <- model.fit$coefficients[2]
     
     plot.txt.log <- paste("log(", data.identifier, ") ~ ", round(b, 4), 
-                          " + ", round(r, 4), "*log(nr.days)", sep="")
+                          " + ", round(r, 4), "*log(", freq.str, ")", sep="")
     plot.txt.lvl <- paste(data.identifier, " ~ ",   round(A, 6),
-                          " * (nr.days^", round(r, 4), ")", sep="")
+                          " * (", freq.str, "^", round(r, 4), ")", sep="")
     
   }
   
@@ -57,8 +59,15 @@ SimpleLogTrendRegression <- function(data,
   
   first.date     <- head(timestamps, 1)
   latest.date    <- tail(timestamps, 1)
-  timestamps.oos <- seq(latest.date + lubridate::days(1), 
-                        latest.date + lubridate::days(nr.future), by="days")
+  
+  if(data.frequency == "daily"){
+    timestamps.oos <- seq(latest.date + lubridate::days(1), 
+                          latest.date + lubridate::days(nr.future), by="days")
+  }
+  else {
+    timestamps.oos <- seq(latest.date + lubridate::weeks(1), 
+                          latest.date + lubridate::weeks(nr.future), by="weeks")
+  }
   model.pred.oos <- predict(model.fit, data.frame(time=seq(nr.idx+1, nr.idx+nr.future)))
   
   #################
@@ -72,7 +81,9 @@ SimpleLogTrendRegression <- function(data,
   plot(timestamps, log(data), lty=1, type="l",
        main=plot.txt.log,
        xlim = c(first.date, tail(timestamps.oos, 1)), xlab="Time",
-       ylim = c(min(model.pred - y.lim.sd), max(model.pred.oos + y.lim.sd)), ylab="Log Price")
+       ylim = c(min(log(data), model.pred - y.lim.sd*model.sd), 
+                max(log(data), model.pred.oos + y.lim.sd*model.sd)), 
+       ylab="Log Price")
   
   lines(timestamps, model.pred, col="green", lwd=2)
   lines(timestamps, model.pred + model.sd, col="purple", lwd="2");
@@ -94,9 +105,11 @@ SimpleLogTrendRegression <- function(data,
   ########################################
   # Logarithmic chart: Spread ############
   ########################################
-  plot(timestamps, log(data) - predict(model.fit), lty=1, type="l",
+  log.spread.predictions <- log(data) - predict(model.fit)
+  plot(timestamps, log.spread.predictions, lty=1, type="l",
        main = paste("Log(", data.identifier, ") - Spread", sep=""),
        xlim = c(first.date, tail(timestamps.oos, 1)), 
+       ylim = c(min(log.spread.predictions, -y.lim.sd*model.sd), max(log.spread.predictions, y.lim.sd*model.sd)),
        xlab="Time", ylab="Trend Deviation")
   
   nr.timestamps <- length(timestamps)
@@ -127,7 +140,8 @@ SimpleLogTrendRegression <- function(data,
   plot(timestamps, data, lty=1, type="l",
        main = plot.txt.lvl,
        xlim = c(first.date, tail(timestamps.oos, 1)), xlab="Time",
-       ylim = c(0, max(exp(model.pred.oos + y.lim.sd*model.sd))), ylab="Price")
+       ylim = c(0, max(data, exp(model.pred.oos + y.lim.sd*model.sd))))
+       # ylim = c(0, max(exp(model.pred.oos + y.lim.sd*model.sd))), ylab="Price")
   lines(timestamps, exp(model.pred), col="green", lwd=2)
   lines(timestamps, exp(model.pred + model.sd), col="purple", lwd=2)
   lines(timestamps, exp(model.pred - model.sd), col="purple", lwd=2)
@@ -152,7 +166,8 @@ SimpleLogTrendRegression <- function(data,
   plot(timestamps, data - exp(model.pred), lty=1, type="l",
        main = paste(data.identifier, " - Spread", sep=""),
        xlim = c(first.date, tail(timestamps.oos, 1)), xlab="Time",
-       ylim = c(min(oos.down), max(oos.up)), ylab="Trend Deviation")
+       ylim = c(min(data - exp(model.pred), oos.down), max(data - exp(model.pred), oos.up)), 
+       ylab="Trend Deviation")
   lines(timestamps, rep(0, length(timestamps)), col="green", lwd=2)
   lines(timestamps, exp(model.pred + model.sd) - exp(model.pred), col="purple", lwd=2)
   lines(timestamps, exp(model.pred - model.sd) - exp(model.pred), col="purple", lwd=2)
