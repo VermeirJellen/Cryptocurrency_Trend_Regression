@@ -47,3 +47,5 @@ FetchCryptocurrencyMarketCapitalizations <- function(){
   historical.market.cap$alts <- historical.market.cap$total - historical.market.cap$btc
   return(historical.market.cap)
 }
+
+

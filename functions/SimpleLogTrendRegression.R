@@ -2,12 +2,13 @@ SimpleLogTrendRegression <- function(data,
                                      data.identifier = "BTC-price", 
                                      regression.type = "loess",
                                      data.frequency  = "daily",
-                                     nr.future       = 120, 
+                                     nr.future       = 340, 
+                                     log.base        = exp(1),
                                      loess.degree    = 1, 
                                      plot.2sd.log    = TRUE, 
                                      plot.2sd.levels = FALSE){
   
-  to.fit        <- data.frame(log(data), seq_along(data))
+  to.fit        <- data.frame(log(data, base=log.base), seq_along(data))
   names(to.fit) <- c("ln.data", "time")
   freq.str      <- ifelse(data.frequency == "daily", "nr.days", "nr.weeks")
   
@@ -38,7 +39,7 @@ SimpleLogTrendRegression <- function(data,
     # y = A*(x^r)
     # ln(y) = ln(A) + r*ln(x)
     # => ln(y) = b + r*ln(x) => A = exp(b);
-    model.fit <- lm(ln.data ~ log(time), to.fit)
+    model.fit <- lm(ln.data ~ log(time, base=log.base), to.fit)
     b <- model.fit$coefficients[1]; A <- exp(b)
     r <- model.fit$coefficients[2]
     
@@ -78,11 +79,11 @@ SimpleLogTrendRegression <- function(data,
   # logarithmic chart #######################
   ###########################################
   y.lim.sd   <- ifelse(plot.2sd.log, 2, 1)
-  plot(timestamps, log(data), lty=1, type="l",
+  plot(timestamps, log(data, base=log.base), lty=1, type="l",
        main=plot.txt.log,
        xlim = c(first.date, tail(timestamps.oos, 1)), xlab="Time",
-       ylim = c(min(log(data), model.pred - y.lim.sd*model.sd), 
-                max(log(data), model.pred.oos + y.lim.sd*model.sd)), 
+       ylim = c(min(log(data, base=log.base), model.pred - y.lim.sd*model.sd), 
+                max(log(data, base=log.base), model.pred.oos + y.lim.sd*model.sd)), 
        ylab="Log Price")
   
   lines(timestamps, model.pred, col="green", lwd=2)
@@ -102,10 +103,11 @@ SimpleLogTrendRegression <- function(data,
     lines(timestamps.oos, model.pred.oos - 2*model.sd, col="red", lwd="2")
   }
   
+  
   ########################################
   # Logarithmic chart: Spread ############
   ########################################
-  log.spread.predictions <- log(data) - predict(model.fit)
+  log.spread.predictions <- log(data, base=log.base) - predict(model.fit)
   plot(timestamps, log.spread.predictions, lty=1, type="l",
        main = paste("Log(", data.identifier, ") - Spread", sep=""),
        xlim = c(first.date, tail(timestamps.oos, 1)), 
@@ -157,6 +159,7 @@ SimpleLogTrendRegression <- function(data,
     lines(timestamps.oos, exp(model.pred.oos + 2*model.sd), col="red", lwd="2")
     lines(timestamps.oos, exp(model.pred.oos - 2*model.sd), col="red", lwd="2")
   }
+
   
   ###########################################
   # Level chart - Spread ####################

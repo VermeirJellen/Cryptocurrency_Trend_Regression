@@ -3,6 +3,8 @@ Bitcoin / Cryptocurrency Market - Trend Regression
 
 Simple trend regressions on bitcoin price data + total cryptocurrency and altcoin market capitalizations.
 
+Latest Readme Update: 21 Jan. 2018
+
 Bitcoin Price Data
 ==================
 
@@ -131,11 +133,6 @@ If you find this software useful and/or you would like to see additional extensi
 -   LTC: LhKf6MQ7LY1k8YMaAq9z3APz8kVyFX3L2M
 -   ETH: 0x8E44D7C96896f2e0Cd5a6CC1A2e6a3716B85B479
 -   DASH: Xvicgp3ga3sczHtLqt3ekt7fQ62G9KaKNB
-
-Or preferably, donate some of my favorite coins :)
-
--   GAME: GMxcsDAaHCBkLnN42Fs9Dy1fpDiLNxSKX1
--   WAVES: 3PQ8KFdw2nWxQATsXQj8NJvSa1VhBcKePaf
 
 Licensing
 ---------

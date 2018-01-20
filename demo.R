@@ -9,17 +9,18 @@ btc.price <- FetchBTCInfo(param           = "market-price",
                           data.identifier = "btc.close", 
                           date.start      = "2011-01-01")
 
-par(mfrow=c(2, 2))
+par(mfrow=c(2, 1))
 SimpleLogTrendRegression(data = btc.price, 
                          data.identifier = "BTC-price",
                          regression.type = "exponential",
-                         nr.future=120, plot.2sd.log = TRUE, plot.2sd.levels = FALSE)
+                         nr.future=120, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
 
 SimpleLogTrendRegression(data = btc.price, 
                          data.identifier = "BTC-price",
                          regression.type = "loess",
                          nr.future=120, plot.2sd.log = TRUE, plot.2sd.levels = TRUE)
 
+par(mfrow=c(2, 1))
 SimpleLogTrendRegression(data            = btc.price,
                          data.identifier = "BTC-price",
                          regression.type = "logarithmic",
